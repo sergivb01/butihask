@@ -19,26 +19,49 @@
 -- -- Oros
 
 data TipusCarta = As | Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Manilla | Sota | Cavall | Rei deriving (Read, Show, Enum, Eq, Ord)
-data Pal = Oros | Copes | Espases | Bastos deriving (Read, Show, Enum, Eq, Ord)
-data Carta = Carta {tipusCarta :: TipusCarta, pal :: Pal} deriving (Read, Show, Eq)
-data Trumfu = Pal | Butifarra
 
+data Pal = Oros | Copes | Espases | Bastos deriving (Read, Show, Enum, Eq, Ord)
+
+data Carta = Carta {tipusCarta :: TipusCarta, pal :: Pal} deriving (Read, Eq)
+
+data Trumfu = Pal | Butifarra deriving (Read, Show, Enum, Eq, Ord)
+
+instance Show Carta where
+  show (Carta t p) = show t ++ " de " ++ show p
 
 type Deck = [Carta]
 
-deck::Deck
+deck :: Deck
 deck = [Carta val su | su <- [Oros .. Bastos], val <- [As .. Rei]]
 
+-- cartesPal :: [Carta] -> Pal -> [Carta]
+-- cartesPal [] _ = []
+-- cartesPal (x : xs) p
+--   | pal x == p = x : cartesPal xs p
+--   | otherwise = cartesPal xs p
+
 cartesPal :: [Carta] -> Pal -> [Carta]
-cartesPal [] _ = []
-cartesPal (x : xs) p
-    | pal x == p = x : cartesPal xs p
-    | otherwise = cartesPal xs p
+cartesPal xs p = filter (\c -> pal c == p) xs
 
 -- palGuanyadorBase :: [Carta] -> Pal -> Pal
 
- 
 -- >>> cartesPal deck Copes
+-- >>> cartesPal2 deck Copes
 -- >>> deck
--- [Carta {tipusCarta = As, pal = Copes},Carta {tipusCarta = Dos, pal = Copes},Carta {tipusCarta = Tres, pal = Copes},Carta {tipusCarta = Quatre, pal = Copes},Carta {tipusCarta = Cinc, pal = Copes},Carta {tipusCarta = Sis, pal = Copes},Carta {tipusCarta = Set, pal = Copes},Carta {tipusCarta = Vuit, pal = Copes},Carta {tipusCarta = Manilla, pal = Copes},Carta {tipusCarta = Sota, pal = Copes},Carta {tipusCarta = Cavall, pal = Copes},Carta {tipusCarta = Rei, pal = Copes}]
--- [Carta {tipusCarta = As, pal = Oros},Carta {tipusCarta = Dos, pal = Oros},Carta {tipusCarta = Tres, pal = Oros},Carta {tipusCarta = Quatre, pal = Oros},Carta {tipusCarta = Cinc, pal = Oros},Carta {tipusCarta = Sis, pal = Oros},Carta {tipusCarta = Set, pal = Oros},Carta {tipusCarta = Vuit, pal = Oros},Carta {tipusCarta = Manilla, pal = Oros},Carta {tipusCarta = Sota, pal = Oros},Carta {tipusCarta = Cavall, pal = Oros},Carta {tipusCarta = Rei, pal = Oros},Carta {tipusCarta = As, pal = Copes},Carta {tipusCarta = Dos, pal = Copes},Carta {tipusCarta = Tres, pal = Copes},Carta {tipusCarta = Quatre, pal = Copes},Carta {tipusCarta = Cinc, pal = Copes},Carta {tipusCarta = Sis, pal = Copes},Carta {tipusCarta = Set, pal = Copes},Carta {tipusCarta = Vuit, pal = Copes},Carta {tipusCarta = Manilla, pal = Copes},Carta {tipusCarta = Sota, pal = Copes},Carta {tipusCarta = Cavall, pal = Copes},Carta {tipusCarta = Rei, pal = Copes},Carta {tipusCarta = As, pal = Espases},Carta {tipusCarta = Dos, pal = Espases},Carta {tipusCarta = Tres, pal = Espases},Carta {tipusCarta = Quatre, pal = Espases},Carta {tipusCarta = Cinc, pal = Espases},Carta {tipusCarta = Sis, pal = Espases},Carta {tipusCarta = Set, pal = Espases},Carta {tipusCarta = Vuit, pal = Espases},Carta {tipusCarta = Manilla, pal = Espases},Carta {tipusCarta = Sota, pal = Espases},Carta {tipusCarta = Cavall, pal = Espases},Carta {tipusCarta = Rei, pal = Espases},Carta {tipusCarta = As, pal = Bastos},Carta {tipusCarta = Dos, pal = Bastos},Carta {tipusCarta = Tres, pal = Bastos},Carta {tipusCarta = Quatre, pal = Bastos},Carta {tipusCarta = Cinc, pal = Bastos},Carta {tipusCarta = Sis, pal = Bastos},Carta {tipusCarta = Set, pal = Bastos},Carta {tipusCarta = Vuit, pal = Bastos},Carta {tipusCarta = Manilla, pal = Bastos},Carta {tipusCarta = Sota, pal = Bastos},Carta {tipusCarta = Cavall, pal = Bastos},Carta {tipusCarta = Rei, pal = Bastos}]
+-- [As de Copes,Dos de Copes,Tres de Copes,Quatre de Copes,Cinc de Copes,Sis de Copes,Set de Copes,Vuit de Copes,Manilla de Copes,Sota de Copes,Cavall de Copes,Rei de Copes]
+-- [As de Copes,Dos de Copes,Tres de Copes,Quatre de Copes,Cinc de Copes,Sis de Copes,Set de Copes,Vuit de Copes,Manilla de Copes,Sota de Copes,Cavall de Copes,Rei de Copes]
+-- [As de Oros,Dos de Oros,Tres de Oros,Quatre de Oros,Cinc de Oros,Sis de Oros,Set de Oros,Vuit de Oros,Manilla de Oros,Sota de Oros,Cavall de Oros,Rei de Oros,As de Copes,Dos de Copes,Tres de Copes,Quatre de Copes,Cinc de Copes,Sis de Copes,Set de Copes,Vuit de Copes,Manilla de Copes,Sota de Copes,Cavall de Copes,Rei de Copes,As de Espases,Dos de Espases,Tres de Espases,Quatre de Espases,Cinc de Espases,Sis de Espases,Set de Espases,Vuit de Espases,Manilla de Espases,Sota de Espases,Cavall de Espases,Rei de Espases,As de Bastos,Dos de Bastos,Tres de Bastos,Quatre de Bastos,Cinc de Bastos,Sis de Bastos,Set de Bastos,Vuit de Bastos,Manilla de Bastos,Sota de Bastos,Cavall de Bastos,Rei de Bastos]
+
+test :: [Int]
+test = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+-- >>> foldr (\acc y -> acc + y) 0 test
+-- 45
+
+-- >>> [((Trumfu Oros) :: Trumfu) ..]
+-- Data constructor not in scope: Trumfu :: Pal -> Trumfu
+
+-- palGuanyadorBasa xs Butifarra = Oros
+-- palGuanyadorBasa xs t = t :: Maybe Pal
+-- palGuanyadorBasa xs t = foldr (\acc c -> if pal acc == t then t else t) Bastos xs
+
