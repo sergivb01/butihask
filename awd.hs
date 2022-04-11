@@ -24,7 +24,9 @@ data Pal = Oros | Copes | Espases | Bastos deriving (Read, Show, Enum, Eq, Ord)
 
 data Carta = Carta {tipusCarta :: TipusCarta, pal :: Pal} deriving (Read, Eq)
 
-data Trumfu = Pal | Butifarra deriving (Read, Show, Enum, Eq, Ord)
+data Trumfu = Trumfu { palTrumfu :: Pal } | Butifarra deriving (Read, Show, Eq, Ord)
+
+-- data Basa = Basa (Carta, Carta, Carta, Carta) deriving (Read, Show, Eq, Ord)
 
 instance Show Carta where
   show (Carta t p) = show t ++ " de " ++ show p
@@ -55,11 +57,10 @@ cartesPal xs p = filter (\c -> pal c == p) xs
 test :: [Int]
 test = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
+-- hiHaPal :: [Carta] -> Pal -> Bool
+
 -- >>> foldr (\acc y -> acc + y) 0 test
 -- 45
-
--- >>> [((Trumfu Oros) :: Trumfu) ..]
--- Data constructor not in scope: Trumfu :: Pal -> Trumfu
 
 -- palGuanyadorBasa xs Butifarra = Oros
 -- palGuanyadorBasa xs t = t :: Maybe Pal
