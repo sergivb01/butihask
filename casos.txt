@@ -1,0 +1,13 @@
+- Soc el primer: [X]
+    - Totes [X]
+
+- El company esta guanyant: [X]
+    - Tinc pal sortida => treure una del pal sortida [X]
+    - No tinc pal sortida => totes [X]
+
+- El company NO esta guanyant:
+    - Tinc pal sortida => jugar pal sortida (i si puc, matar-la)
+
+    - No tinc pal sortida però tinc guanya la basa (triomf) => Les que guanyin la basa
+
+    - No tinc pal sortida ni guanya basa => Totes

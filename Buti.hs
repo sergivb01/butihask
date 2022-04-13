@@ -55,9 +55,6 @@ punts (x : xs)
 cartesPal :: [Carta] -> Pal -> [Carta]
 cartesPal xs p = filter (\c -> pal c == p) xs
 
--- >>> cartesPal [Carta As Oros] Butifarra
--- [As de Oros]
-
 -- retorna cert si en la llista de cartes hi ha alguna que és del Pal del paràmetre
 hiHaPal :: [Carta] -> Pal -> Bool
 hiHaPal xs p = length (cartesPal xs p) > 0 -- també podriem cridar cartesPal i comprovar length
@@ -73,6 +70,7 @@ palGuanyadorBasa (x : xs) t
 
 -- posicioLlista: donada una llista i un element, retorna la posició de l'element
 posicioLlista :: Eq a => [a] -> a -> Int
+-- TODO: canviar:
 posicioLlista [] _ = error "llista buida o element no hi pertany"
 posicioLlista (x : xs) y
   | x == y = 0
@@ -93,7 +91,6 @@ quiSortira x y
   | x + y - 1 > 4 = x + y - 5
   | otherwise = x + y - 1
 
-
 -- - El company esta guanyant:
 --     - Tinc pal sortida => treure una del pal sortida
 --     - No tinc pal sortida => totes
@@ -103,21 +100,13 @@ jugadesCompany cartes t (sortida : xs)
   | hiHaPal cartes (pal sortida) = cartesPal cartes (pal sortida)
   | otherwise = cartes
 
--- cartesMaten: donada una llista de cartes i una que volem matar (la que va guanyant), retornem les que poden matar-la
--- i són del mateix pal. Sense tenir en compte el trumfu
 cartesMaten :: [Carta] -> Carta -> Trumfu -> [Carta]
-cartesMaten cartes victima t
--- Si el pal de la carta victma és igual al pal del Trumfu => Totes del pal victima superiors a la victma
- | t == Butifarra || pal victima == palTrumfu t = mateixPal
--- Si el pal de la carta victma és diferent al pal del Trumfu => Totes les del pal Trumfu + Totes del pal victima superiors a la victma
- | otherwise = mateixPal ++ filter (\c -> pal c == palTrumfu t) cartes
- where mateixPal = filter (\c -> pal c == pal victima && (tipusCarta c < tipusCarta victima)) cartes
-
-cartesMaten2 :: [Carta] -> Carta -> Trumfu -> [Carta]
--- totes del pal victima superiors a la victma + extres
-cartesMaten2 cartes victima t = filter (\c -> pal c == pal victima && (tipusCarta c < tipusCarta victima)) cartes ++ extres
-  where extres | t == Butifarra || pal victima == palTrumfu t =  []
-              | otherwise = filter (\c -> pal c == palTrumfu t) cartes -- afegim també les que són del Trumfu
+-- Totes del pal victima superiors a la victma + extres
+cartesMaten cartes victima t = filter (\c -> pal c == pal victima && (tipusCarta c < tipusCarta victima)) cartes ++ extres
+  where
+    extres
+      | t == Butifarra || pal victima == palTrumfu t = []
+      | otherwise = filter (\c -> pal c == palTrumfu t) cartes -- afegim també les que són del Trumfu
 
 -- - El company NO esta guanyant:
 --    - Tinc pal sortida => jugar pal sortida (i si puc, matar-la)
@@ -136,7 +125,7 @@ jugadesNoCompany cartes t (sortida : xs)
   | otherwise = cartes
   where
     guanyant = fst (quiGuanya (sortida : xs) t)
-    maten = cartesMaten2 cartes guanyant t
+    maten = cartesMaten cartes guanyant t
 
 -- jugades: donades les cartes que te un jugador, el pal de la partida i les cartes tirades fins al moment en la basa actual,
 -- ens retorni la llista de cartes que pot tirar (d’acord amb les normes del joc)
@@ -150,7 +139,35 @@ jugades cartes t tirades
   where
     tirs = length tirades
 
--- >>> length [1,2,3,4,5,6]
--- 6
+seguent :: Int -> Int
+seguent x = x `mod` 4 + 1
 
--- basaCorrecta: donades la llista de llistes de cartes dels jugadors, donat el pal de la partida, donat el jugador que ha tirat primer a la basa, i donada la llista de cartes de la basa, ens digui, si hi ha hagut trampa, qui ha fet la trampa
+existeixLlista :: Eq a => [a] -> a -> Bool
+existeixLlista [] _ = False
+existeixLlista (x : xs) y
+  | x == y = True
+  | otherwise = existeixLlista xs y
+
+-- basaCorrecta: donades la llista de llistes de cartes dels jugadors, donat el pal de la partida,
+-- donat el jugador que ha tirat primer a la basa, i donada la llista de cartes de la basa, ens digui,
+-- si hi ha hagut trampa, qui ha fet la trampa
+basaCorrecta :: [[Carta]] -> Trumfu -> Int -> [Carta] -> Maybe Int
+basaCorrecta cj t p basa
+ | existeixLlista tramposos True = Just (ordreJugadors !! posicioLlista tramposos True)
+ | otherwise = Nothing
+  where
+    -- les bases en cada canvi començant per llista buida
+    bases = [take x basa | x <- [0..length basa]]
+
+    -- llista dels jugadors per ordre de tirada
+    ordreJugadors = [seguent x | x <- [p - 1 .. (p + 2)]]
+
+    -- llista de cartes que pot jugar cada jugador ordenat per ordre de tirada
+      -- (ordreJugadors !! x) - 1 => ens retorna l'index del jugador que ha tirat al torn x [0..3]
+      -- (bases !! x) => ens retorna la basa abans que tiri el jugador actual
+    cartesJugades = [jugades (cj !! ((ordreJugadors !! x) - 1)) t (bases !! x) | x <- [0..3]]
+
+    -- llista que ens diu si els jugadors han fet trampes, en ordre de tirada
+      -- (cartesJugades !! x) => cartes que podia jugar el jugador
+      -- ((bases !! (x + 1)) !! x) => ens diu la carta que ha tirat el jugador
+    tramposos = [not (existeixLlista (cartesJugades !! x) ((bases !! (x + 1)) !! x)) | x <- [0..3]]

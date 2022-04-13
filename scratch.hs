@@ -1,8 +1,7 @@
 import Buti
-import Debug.Trace ( trace )
+import Debug.Trace (trace)
 
 ---------------------------------------------------- PRINCIPALS ----------------------------------------------------
-
 
 -- >>> punts deck
 -- 60
@@ -26,7 +25,8 @@ import Debug.Trace ( trace )
 -- >>> quiGuanya [Carta As Bastos, Carta As Oros,Carta As Bastos] (Trumfu Oros)
 -- As de Oros
 
-a = [Carta As Bastos, Carta As Oros,Carta As Espases]
+a = [Carta As Bastos, Carta As Oros, Carta As Espases]
+
 -- >>> a !! posicioLlista a (Carta As Espases)
 -- >>> posicioLlista a (Carta As Espases)
 -- As de Espases
@@ -42,9 +42,56 @@ a = [Carta As Bastos, Carta As Oros,Carta As Espases]
 --  Manilla | As | Rei | Cavall | Sota
 
 --            guanyador        company          enemigo
-tirades = [Carta Cavall Oros, Carta Cinc Oros, Carta Cavall Bastos]
-tenim = [Carta As Espases, Carta Vuit Espases, Carta Manilla Copes, Carta Manilla Bastos, Carta Set Copes, Carta Dos Bastos]
-t = Trumfu Bastos
+tirades = [Carta Cavall Oros, Carta As Oros, Carta Cavall Bastos]
+
+tenim = [Carta As Espases, Carta Vuit Espases, Carta Manilla Copes, Carta Quatre Bastos]
+
+
+-- >>> quiGuanya tirades t
 -- >>> jugades tenim t tirades
--- [Manilla de Bastos]
+-- (Cavall de Bastos,2)
+-- [As de Espases,Vuit de Espases,Manilla de Copes,Quatre de Bastos]
+
+-- >>> [Carta val su | su <- [Oros .. Bastos], val <- [Manilla .. Dos]]
+
+-- >>> [quiSortira x y | x <- [1 .. 4], y <- [1 .. 4]]
+-- [1,2,3,4,2,3,4,1,3,4,1,2,4,1,2,3]
+
+t = Butifarra
+cjAa :: [[Carta]]
+cjAa =
+  [ [Carta Dos Oros, Carta Quatre Bastos],
+    [Carta Manilla Copes, Carta As Copes, Carta Set Oros],
+    [Carta Manilla Espases, Carta Vuit Bastos],
+    [Carta Manilla Bastos, Carta Cavall Oros]
+  ]
+
+basaAa :: [Carta]
+basaAa = [Carta Dos Oros, Carta Manilla Copes, Carta Vuit Bastos, Carta Cavall Oros]
+
+p = 2::Int
+
+-- basaCorrecta :: [[Carta]] -> Trumfu -> Int -> [Carta]
+-- >>> basaCorrecta cjAa t p basaAa
+-- 2
+
+
+-- cjAa = cartesJugadors
+-- p = 1::Int
+-- basesAa = [take x basaAa | x <- [0..length basaAa]]
+-- ordreJugadorsAa = [seguent x | x <- [p - 1 .. (p + 2)]]
+
+basesAa = [take x basaAa | x <- [0..length basaAa]]
+ordreJugadorsAa = [seguent x | x <- [p - 1 .. (p + 2)]]
+cartesJugadesAa = [jugades (cjAa !! ((ordreJugadorsAa !! x) - 1)) t (basesAa !! x) | x <- [0..3]]
+trampososAa = [not (existeixLlista (cartesJugadesAa !! x) ((basesAa !! (x + 1)) !! x)) | x <- [0..3]]
+
+-- >>> basesAa
+-- >>> ordreJugadorsAa
+-- >>> cartesJugadesAa
+-- >>> trampososAa
+-- [[],[Dos de Oros],[Dos de Oros,Manilla de Copes],[Dos de Oros,Manilla de Copes,Vuit de Bastos],[Dos de Oros,Manilla de Copes,Vuit de Bastos,Cavall de Oros]]
+-- [2,3,4,1]
+-- [[Manilla de Copes,As de Copes,Set de Oros],[Manilla de Espases,Vuit de Bastos],[Cavall de Oros],[Dos de Oros]]
+-- [True,True,True,True]
 
