@@ -1,5 +1,7 @@
 module Buti where
 
+import Debug.Trace (trace)
+
 ------------------------------------------------------- TIPUS -------------------------------------------------------
 
 data TipusCarta = Manilla | As | Rei | Cavall | Sota | Vuit | Set | Sis | Cinc | Quatre | Tres | Dos deriving (Read, Show, Enum, Eq, Ord)
@@ -30,14 +32,14 @@ deck = [Carta val su | su <- [Oros .. Bastos], val <- [Manilla .. Dos]]
 -- les llistes de cartes guanyades per cada parella
 -- cartesGuanyades:: Trumfu -> [Carta] -> Int -> ([Carta],[Carta])
 
-
 -- punts: Donada una llista de cartes, en conta els punts que hi ha
 punts :: [Carta] -> Int
 punts [] = 0
 punts (x : xs)
   | p >= 5 = 0 + punts xs
   | otherwise = 5 - p + punts xs
-  where p = fromEnum (tipusCarta x)
+  where
+    p = fromEnum (tipusCarta x)
 
 -- puntsParelles: Donades les cartes dels quatre jugadors, donat el trumfu de la partida (el pal que mana),
 -- la llista de cartes tirades per ordre (de la primera a la última) i el número de jugador que
@@ -52,9 +54,12 @@ punts (x : xs)
 cartesPal :: [Carta] -> Pal -> [Carta]
 cartesPal xs p = filter (\c -> pal c == p) xs
 
+-- >>> cartesPal [Carta As Oros] Butifarra
+-- [As de Oros]
+
 -- retorna cert si en la llista de cartes hi ha alguna que és del Pal del paràmetre
 hiHaPal :: [Carta] -> Pal -> Bool
-hiHaPal xs p = any (\c -> pal c == p) xs
+hiHaPal xs p = length (cartesPal xs p) > 0 -- també podriem cridar cartesPal i comprovar length
 
 -- palGuanyadorBasa: donada una llista de cartes (en ordre de tirada), i el pal del trumfu, ens indiqui quin és el pal que està guanyant la basa
 -- TODO: es pot passar a foldr (?)
@@ -64,7 +69,6 @@ palGuanyadorBasa (x : xs) t
   | t == Butifarra = pal x
   | hiHaPal (x : xs) (palTrumfu t) = palTrumfu t
   | otherwise = pal x
-
 
 -- posicioLlista: donada una llista i un element, retorna la posició de l'element
 posicioLlista :: Eq a => [a] -> a -> Int
@@ -81,7 +85,6 @@ quiGuanya xs t = (c, posicioLlista xs c)
   where
     c = minimum (cartesPal xs (palGuanyadorBasa xs t))
 
-
 -- quiSortira: donat el nombre de jugador que ha començat la basa, i la posició del que ha guanyat la basa, ens digui quin és el nombre de jugador que començarà la següent basa
 -- (és a dir, el que ha guanyat la basa actual). Per exemple, si ha començat tirant el jugador 2 i guanya la basa el que ha tirat segon, començarà la següent basa el jugador 3
 quiSortira :: Int -> Int -> Int
@@ -89,7 +92,47 @@ quiSortira x y
   | x + y - 1 > 4 = x + y - 5
   | otherwise = x + y - 1
 
--- jugades: donades les cartes que te un jugador, el pal de la partida i les cartes tirades fins al moment en la basa actual, ens retorni la llista de cartes que pot tirar (d’acord amb les normes del joc)
--- jugades :: [Carta] -> Pal -> [Carta] -> [Carta]
+jugadesCompany :: [Carta] -> Trumfu -> [Carta] -> [Carta]
+jugadesCompany cartes _ [] = cartes
+jugadesCompany cartes t (sortida : xs)
+  | hiHaPal cartes (pal sortida) = cartesPal cartes (pal sortida)
+  | otherwise = cartes
+
+-- cartesMaten: donada una llista de cartes i una que volem matar (la que va guanyant), retornem les que poden matar-la
+-- i són del mateix pal. Sense tenir en compte el trumfu
+cartesMaten :: [Carta] -> Carta -> Trumfu -> [Carta]
+cartesMaten cartes victima Butifarra = filter (\c -> pal c == pal victima && (tipusCarta c < tipusCarta victima)) cartes
+-- TODO: repassar againnn
+cartesMaten cartes victima t = filter (\c -> (pal c == palTrumfu t) || (pal c == pal victima && (tipusCarta c < tipusCarta victima))) cartes
+
+jugadesNoCompany :: [Carta] -> Trumfu -> [Carta] -> [Carta]
+jugadesNoCompany [] _ _ = []
+jugadesNoCompany _ _ [] = []
+jugadesNoCompany cartes t (sortida : xs)
+  -- Si el jugador té cartes del pal de sortida haurà de jugar-ne una d'aquest pal i sempre que pugui haurà de matar-la.
+  | hiHaPal cartes (pal sortida) && hiHaPal maten (pal sortida) = cartesPal maten (pal sortida)
+  | hiHaPal cartes (pal sortida) = cartesPal cartes (pal sortida)
+  -- Si el jugador no té cap carta del pal de sortida però en té d'altres que guanyen la basa (triomf) haurà de jugar una carta que guanyi la basa.
+  | length maten > 0 = maten
+  -- Si el jugador no té ni cap carta del pal de sortida ni cap carta que guanyi la basa, podrà jugar la carta que vulgui.
+  | otherwise = cartes
+  where
+    guanyant = fst (quiGuanya (sortida : xs) t)
+    maten = cartesMaten cartes guanyant t
+
+-- jugades: donades les cartes que te un jugador, el pal de la partida i les cartes tirades fins al moment en la basa actual,
+-- ens retorni la llista de cartes que pot tirar (d’acord amb les normes del joc)
+jugades :: [Carta] -> Trumfu -> [Carta] -> [Carta]
+jugades [] _ _ = []
+jugades cartes _ [] = cartes
+jugades cartes t tirades
+  -- falta comprovar si el que esta guanyant es el company o no
+  | tirs >= 2 && snd (quiGuanya tirades t) == tirs = jugadesCompany cartes t tirades -- el company ja ha tirat
+  | otherwise = jugadesNoCompany cartes t tirades -- som els primers de la parella en tirar
+  where
+    tirs = length tirades
+
+-- >>> length [1,2,3,4,5,6]
+-- 6
 
 -- basaCorrecta: donades la llista de llistes de cartes dels jugadors, donat el pal de la partida, donat el jugador que ha tirat primer a la basa, i donada la llista de cartes de la basa, ens digui, si hi ha hagut trampa, qui ha fet la trampa

@@ -1,5 +1,5 @@
 import Buti
-
+import Debug.Trace ( trace )
 
 ---------------------------------------------------- PRINCIPALS ----------------------------------------------------
 
@@ -37,4 +37,14 @@ a = [Carta As Bastos, Carta As Oros,Carta As Espases]
 
 -- >>> length [Carta Vuit Bastos, Carta As Oros, Carta Manilla Oros]
 -- 3
+
+--    9       1    12     11   10
+--  Manilla | As | Rei | Cavall | Sota
+
+--            guanyador        company          enemigo
+tirades = [Carta Cavall Oros, Carta Cinc Oros, Carta Cavall Bastos]
+tenim = [Carta As Espases, Carta Vuit Espases, Carta Manilla Copes, Carta Manilla Bastos, Carta Set Copes, Carta Dos Bastos]
+t = Trumfu Bastos
+-- >>> jugades tenim t tirades
+-- [Manilla de Bastos,Dos de Bastos]
 
