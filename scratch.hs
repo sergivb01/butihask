@@ -67,13 +67,13 @@ cjAa =
   ]
 
 basaAa :: [Carta]
-basaAa = [Carta Dos Oros, Carta Manilla Copes, Carta Vuit Bastos, Carta Cavall Oros]
+basaAa = [Carta Dos Oros, Carta Set Oros, Carta Vuit Bastos, Carta Cavall Oros]
 
-p = 2::Int
+p = 1::Int
 
 -- basaCorrecta :: [[Carta]] -> Trumfu -> Int -> [Carta]
 -- >>> basaCorrecta cjAa t p basaAa
--- 2
+-- Nothing
 
 
 -- cjAa = cartesJugadors
@@ -81,8 +81,9 @@ p = 2::Int
 -- basesAa = [take x basaAa | x <- [0..length basaAa]]
 -- ordreJugadorsAa = [seguent x | x <- [p - 1 .. (p + 2)]]
 
+seguentAA x = x `mod` 4 + 1
 basesAa = [take x basaAa | x <- [0..length basaAa]]
-ordreJugadorsAa = [seguent x | x <- [p - 1 .. (p + 2)]]
+ordreJugadorsAa = [seguentAA x | x <- [p - 1 .. (p + 2)]]
 cartesJugadesAa = [jugades (cjAa !! ((ordreJugadorsAa !! x) - 1)) t (basesAa !! x) | x <- [0..3]]
 trampososAa = [not (existeixLlista (cartesJugadesAa !! x) ((basesAa !! (x + 1)) !! x)) | x <- [0..3]]
 

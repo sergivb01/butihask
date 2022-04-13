@@ -25,7 +25,30 @@ deck = [Carta val su | su <- [Oros .. Bastos], val <- [Manilla .. Dos]]
 -- la llista de cartes tirades per ordre (de la primera a la última) i el número de jugador que
 -- ha tirat la primera carta, ens retorna (si efectivament hi ha hagut trampa) la basa i el
 -- número de basa on s’ha produït la trampa i el jugador que l’ha feta
--- trampa:: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
+trampa:: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
+trampa cj t tirades p = Nothing
+  where
+    cjBasa = [borrarElement (cj !! x) carta | x <- [0..3]]
+    primerBasa = [seguent x | x <- [p - 1 .. (p + 2)]]
+    bases = [take 4 (drop (x*4) tirades) | x <- [0 .. nombreBases - 1]]
+    nombreBases = length tirades `div` 4
+
+
+tirades =
+  [
+  Carta Dos Oros, Carta Quatre Bastos,Carta Manilla Copes, Carta As Copes,
+ Carta Set Oros, Carta Manilla Espases, Carta Vuit Bastos,Carta Manilla Bastos
+  ]
+bases = [take 4 (drop (x*4) tirades) | x <- [0 .. length tirades `div` 4 - 1]]
+
+-- comprovem basaCorrecta
+-- quiGuanya
+-- treiem cartes fetes servir
+-- mirem quiSortira
+-- comprovem seguent basa
+
+-- >>> bases
+-- [[Dos de Oros,Quatre de Bastos,Manilla de Copes,As de Copes],[Set de Oros,Manilla de Espases,Vuit de Bastos,Manilla de Bastos]]
 
 -- cartesGuanyades: Donat el trumfu de la partida, la llista de cartes tirades per ordre (de la primera a la
 -- última) i el número de jugador que ha tirat la primera carta, ens retorna una tupla amb
@@ -70,7 +93,6 @@ palGuanyadorBasa (x : xs) t
 
 -- posicioLlista: donada una llista i un element, retorna la posició de l'element
 posicioLlista :: Eq a => [a] -> a -> Int
--- TODO: canviar:
 posicioLlista [] _ = error "llista buida o element no hi pertany"
 posicioLlista (x : xs) y
   | x == y = 0
@@ -139,14 +161,16 @@ jugades cartes t tirades
   where
     tirs = length tirades
 
-seguent :: Int -> Int
-seguent x = x `mod` 4 + 1
-
 existeixLlista :: Eq a => [a] -> a -> Bool
 existeixLlista [] _ = False
 existeixLlista (x : xs) y
   | x == y = True
   | otherwise = existeixLlista xs y
+
+
+-- retorna el numero del seguent jugador que tirara a la basa
+seguent :: Integral a => a -> a
+seguent x = x `mod` 4 + 1
 
 -- basaCorrecta: donades la llista de llistes de cartes dels jugadors, donat el pal de la partida,
 -- donat el jugador que ha tirat primer a la basa, i donada la llista de cartes de la basa, ens digui,
@@ -171,3 +195,9 @@ basaCorrecta cj t p basa
       -- (cartesJugades !! x) => cartes que podia jugar el jugador
       -- ((bases !! (x + 1)) !! x) => ens diu la carta que ha tirat el jugador
     tramposos = [not (existeixLlista (cartesJugades !! x) ((bases !! (x + 1)) !! x)) | x <- [0..3]]
+
+borrarElement :: Eq a => [a] -> a -> [a]
+borrarElement [] _ = []
+borrarElement (x:xs) e
+  | e == x = borrarElement xs e
+  | otherwise = x : borrarElement xs e
