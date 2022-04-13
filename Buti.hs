@@ -46,6 +46,7 @@ punts (x : xs)
 -- ha tirat la primera carta, ens retorna (si no hi ha hagut trampa) una tupla amb els punts
 -- fets per la primera i per la segona parella
 -- puntsParelles:: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe (Int, Int)
+-- TODO: si es butifarra, la puntuació es doble
 
 ---------------------------------------------------- ADICIONALS ----------------------------------------------------
 
@@ -92,6 +93,10 @@ quiSortira x y
   | x + y - 1 > 4 = x + y - 5
   | otherwise = x + y - 1
 
+
+-- - El company esta guanyant:
+--     - Tinc pal sortida => treure una del pal sortida
+--     - No tinc pal sortida => totes
 jugadesCompany :: [Carta] -> Trumfu -> [Carta] -> [Carta]
 jugadesCompany cartes _ [] = cartes
 jugadesCompany cartes t (sortida : xs)
@@ -101,10 +106,23 @@ jugadesCompany cartes t (sortida : xs)
 -- cartesMaten: donada una llista de cartes i una que volem matar (la que va guanyant), retornem les que poden matar-la
 -- i són del mateix pal. Sense tenir en compte el trumfu
 cartesMaten :: [Carta] -> Carta -> Trumfu -> [Carta]
-cartesMaten cartes victima Butifarra = filter (\c -> pal c == pal victima && (tipusCarta c < tipusCarta victima)) cartes
--- TODO: repassar againnn
-cartesMaten cartes victima t = filter (\c -> (pal c == palTrumfu t) || (pal c == pal victima && (tipusCarta c < tipusCarta victima))) cartes
+cartesMaten cartes victima t
+-- Si el pal de la carta victma és igual al pal del Trumfu => Totes del pal victima superiors a la victma
+ | t == Butifarra || pal victima == palTrumfu t = mateixPal
+-- Si el pal de la carta victma és diferent al pal del Trumfu => Totes les del pal Trumfu + Totes del pal victima superiors a la victma
+ | otherwise = mateixPal ++ filter (\c -> pal c == palTrumfu t) cartes
+ where mateixPal = filter (\c -> pal c == pal victima && (tipusCarta c < tipusCarta victima)) cartes
 
+cartesMaten2 :: [Carta] -> Carta -> Trumfu -> [Carta]
+-- totes del pal victima superiors a la victma + extres
+cartesMaten2 cartes victima t = filter (\c -> pal c == pal victima && (tipusCarta c < tipusCarta victima)) cartes ++ extres
+  where extres | t == Butifarra || pal victima == palTrumfu t =  []
+              | otherwise = filter (\c -> pal c == palTrumfu t) cartes -- afegim també les que són del Trumfu
+
+-- - El company NO esta guanyant:
+--    - Tinc pal sortida => jugar pal sortida (i si puc, matar-la)
+--    - No tinc pal sortida però tinc guanya la basa (triomf) => Les que guanyin la basa
+--    - No tinc pal sortida ni guanya basa => Totes
 jugadesNoCompany :: [Carta] -> Trumfu -> [Carta] -> [Carta]
 jugadesNoCompany [] _ _ = []
 jugadesNoCompany _ _ [] = []
@@ -118,7 +136,7 @@ jugadesNoCompany cartes t (sortida : xs)
   | otherwise = cartes
   where
     guanyant = fst (quiGuanya (sortida : xs) t)
-    maten = cartesMaten cartes guanyant t
+    maten = cartesMaten2 cartes guanyant t
 
 -- jugades: donades les cartes que te un jugador, el pal de la partida i les cartes tirades fins al moment en la basa actual,
 -- ens retorni la llista de cartes que pot tirar (d’acord amb les normes del joc)

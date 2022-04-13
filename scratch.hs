@@ -46,5 +46,5 @@ tirades = [Carta Cavall Oros, Carta Cinc Oros, Carta Cavall Bastos]
 tenim = [Carta As Espases, Carta Vuit Espases, Carta Manilla Copes, Carta Manilla Bastos, Carta Set Copes, Carta Dos Bastos]
 t = Trumfu Bastos
 -- >>> jugades tenim t tirades
--- [Manilla de Bastos,Dos de Bastos]
+-- [Manilla de Bastos]
 
