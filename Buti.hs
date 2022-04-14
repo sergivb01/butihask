@@ -13,7 +13,7 @@ data Carta = Carta {tipusCarta :: TipusCarta, pal :: Pal} deriving (Read, Eq, Or
 data Trumfu = Trumfu {palTrumfu :: Pal} | Butifarra deriving (Read, Show, Eq, Ord)
 
 instance Show Carta where
-  show (Carta t p) = show t ++ " de " ++ show p
+  show (Carta t p) = "Carta " ++ show t ++ " " ++ show p
 
 deck :: [Carta]
 deck = [Carta val su | su <- [Oros .. Bastos], val <- [Manilla .. Dos]]
@@ -24,16 +24,12 @@ comprovarBases _ _ [] _ _ = Nothing
 comprovarBases cj t (bAct:xs) p nBasa =
   case bc of
     Just x -> Just (bAct, x, nBasa)
-    Nothing -> comprovarBases cjNext t xs next (nBasa + 1)
+    Nothing -> trace ("Next = " ++ show next ++ ", cjNext=" ++ show cjNext) (comprovarBases cjNext t xs next (nBasa + 1))
   where
     ordreTirada = [seguent x | x <- [p - 1 .. (p + 2)]]
     bc = basaCorrecta cj t p bAct
     next = quiSortira p (snd(quiGuanya bAct t) + 1)
-    cjNext = [borrarElement (cj !! ((ordreTirada !! x) - 1)) (bAct !! x) | x <- [0..3]]
-
--- | bc == Nothing = Nothing
--- | otherwise = Just (bAct, fromMaybe bc, 3)
-
+    cjNext = [borrarElement (cj !! x) (bAct !! (posicioLlista ordreTirada (x + 1))) | x <- [0..3]]
 
 -- trampa: Donades les cartes dels quatre jugadors, donat el trumfu (el pal que mana) de la partida,
 -- la llista de cartes tirades per ordre (de la primera a la última) i el número de jugador que
@@ -50,38 +46,23 @@ trampa cj t tirades p = comprovarBases cj t bases p 1
 -- TEST
 cjAa :: [[Carta]]
 cjAa =
-  [ [Carta Dos Oros, Carta Quatre Bastos],
-    [Carta As Copes, Carta Quatre Bastos],
-    [Carta Manilla Copes, Carta Vuit Bastos],
+  [ [Carta Cavall Oros, Carta Quatre Bastos],
+    [Carta Vuit Copes, Carta As Oros],
+    [Carta Vuit Oros, Carta Cinc Bastos],
     [Carta Manilla Bastos, Carta Cavall Bastos]
   ]
 
+tirades :: [Carta]
 tirades =
   [
-  Carta Dos Oros, Carta Quatre Bastos,Carta Manilla Copes, Carta Manilla Bastos,
+  Carta Cavall Oros, Carta As Oros, Carta Manilla Oros, Carta Manilla Bastos,
   Carta Dos Oros, Carta Manilla Espases, Carta Vuit Bastos,Carta Manilla Bastos
   ]
 
 -- /TEST
--- >>> trampa cjAa Butifarra tirades 1
--- Just ([Dos de Oros,Manilla de Espases,Vuit de Bastos,Manilla de Bastos],1,2)
+-- >>> trampa cjAa (Trumfu Bastos) tirades 1
+-- Just ([Cavall de Oros,As de Oros,Manilla de Oros,Manilla de Bastos],3,1)
 
-
--- >>> guanyador
--- >>> quiComença
--- >>> quiSortira 4 1
--- Variable not in scope: guanyador
-
--- bases = [take 4 (drop (x*4) tirades) | x <- [0 .. length tirades `div` 4 - 1]]
-
--- comprovem basaCorrecta
--- quiGuanya
--- treiem cartes fetes servir
--- mirem quiSortira
--- comprovem seguent basa
-
--- >>> bases
--- [[Dos de Oros,Quatre de Bastos,Manilla de Copes,As de Copes],[Set de Oros,Manilla de Espases,Vuit de Bastos,Manilla de Bastos]]
 
 -- cartesGuanyades: Donat el trumfu de la partida, la llista de cartes tirades per ordre (de la primera a la
 -- última) i el número de jugador que ha tirat la primera carta, ens retorna una tupla amb
@@ -152,7 +133,7 @@ quiSortira x y
 -- >>> quiGuanya [Carta As Oros, Carta Dos Bastos, Carta Dos Bastos, Carta Dos Bastos] Butifarra
 -- (As de Oros,0)
 
- 
+
 -- - El company esta guanyant:
 --     - Tinc pal sortida => treure una del pal sortida
 --     - No tinc pal sortida => totes
@@ -217,7 +198,7 @@ seguent x = x `mod` 4 + 1
 -- si hi ha hagut trampa, qui ha fet la trampa
 basaCorrecta :: [[Carta]] -> Trumfu -> Int -> [Carta] -> Maybe Int
 basaCorrecta cj t p basa
- | existeixLlista tramposos True = Just (ordreJugadors !! posicioLlista tramposos True)
+ | existeixLlista tramposos True = trace ("Basa " ++ show basa ++ " incorrecta. cartesJugades=" ++ show cartesJugades ++ ", ordreJugadors=" ++ show ordreJugadors ++ ", tramposos=" ++ show tramposos ++ " | CJ= " ++ show cj) (Just (ordreJugadors !! posicioLlista tramposos True))
  | otherwise = Nothing
   where
     -- les bases en cada canvi començant per llista buida
@@ -238,7 +219,8 @@ basaCorrecta cj t p basa
 
 -- TODO: reemplaçar per un filter
 borrarElement :: Eq a => [a] -> a -> [a]
-borrarElement [] _ = []
-borrarElement (x:xs) e
-  | e == x = borrarElement xs e
-  | otherwise = x : borrarElement xs e
+borrarElement xs x = filter (/= x) xs
+-- borrarElement [] _ = []
+-- borrarElement (x:xs) e
+--   | e == x = borrarElement xs e
+--   | otherwise = x : borrarElement xs e

@@ -1,26 +1,33 @@
--- % Podeu afegir les seg�ents constants al vostre codi, degudament transpormades les cartes als vostres tipus.
+-- % Podeu afegir les seg�ents constants al vostre codi, Carta degudament transpormades les cartes als vostres tipus.
 -- % �s una partida correcte tenint en compte que comen�a el jugador 1 i que el trumfu �s Oros.
 -- % La puntuaci� per parelles �s 37 i 35.
+import Buti
 
-
-cartes1 =
- [
-  [Manilla de Bastos, Vuit de Bastos, Tres d'Espases, As de Copes, Quatre de Bastos, Cavall d'Espases, Set de Copes, As d'Oros, Cinc de Bastos, Sota de Copes, Quatre d'Espases, Set de Bastos],
-  [Sota de Bastos, Cavall de Bastos, Manilla d'Espases, Vuit de Copes, Cinc d'Oros, Vuit d'Espases, Manilla de Copes, Sis d'Oros, Sota d'Oros, Cinc de Copes, Set d'Oros, Quatre de Copes],
-  [As de Bastos, Dos d'Oros, Rei d'Espases, Cavall de Copes, Vuit d'Oros, As d'Espases, Rei de Copes, Rei d'Oros, Tres de Copes, Sis de Copes, Sis d'Espases, Cinc d'Espases],
-  [Dos de Bastos, Tres de Bastos, Dos d'Espases, Dos de Copes, Sis de Bastos, Set d'Espases, Tres d'Oros, Quatre d'Oros, Rei de Bastos, Cavall d'Oros, Manilla d'Oros, Sota d'Espases]
+cartes1 =[
+  [Carta Manilla Bastos, Carta Vuit Bastos, Carta Tres Espases, Carta As Copes, Carta Quatre Bastos, Carta Cavall Espases, Carta Set Copes, Carta As Oros, Carta Cinc Bastos, Carta Sota Copes, Carta Quatre Espases, Carta Set Bastos],
+  [Carta Sota Bastos, Carta Cavall Bastos, Carta Manilla Espases, Carta Vuit Copes, Carta Cinc Oros, Carta Vuit Espases, Carta Manilla Copes, Carta Sis Oros, Carta Sota Oros, Carta Cinc Copes, Carta Set Oros, Carta Quatre Copes],
+  [Carta As Bastos, Carta Dos Oros, Carta Rei Espases, Carta Cavall Copes, Carta Vuit Oros, Carta As Espases, Carta Rei Copes, Carta Rei Oros, Carta Tres Copes, Carta Sis Copes, Carta Sis Espases, Carta Cinc Espases],
+  [Carta Dos Bastos, Carta Tres Bastos, Carta Dos Espases, Carta Dos Copes, Carta Sis Bastos, Carta Set Espases, Carta Tres Oros, Carta Quatre Oros, Carta Rei Bastos, Carta Cavall Oros, Carta Manilla Oros, Carta Sota Espases]
  ]
 
- partida1 = [
-	 Manilla de Bastos, Sota de Bastos, As de Bastos, Dos de Bastos,
-	 Vuit de Bastos, Cavall de Bastos, Dos d'Oros, Tres de Bastos,
-	 Rei d'Espases, Dos d'Espases, Tres d'Espases, Manilla d'Espases,
-	 Vuit de Copes, Cavall de Copes, Dos de Copes, As de Copes,
-	 Quatre de Bastos, Cinc d'Oros, Vuit d'Oros, Sis de Bastos,
-	 As d'Espases, Set d'Espases, Cavall d'Espases, Vuit d'Espases,
-	 Rei de Copes, Tres d'Oros, Set de Copes, Manilla de Copes,
-	 Quatre d'Oros, As d'Oros, Sis d'Oros, Rei d'Oros,
-	 Cinc de Bastos, Sota d'Oros, Tres de Copes, Rei de Bastos,
-	 Cinc de Copes, Sis de Copes, Cavall d'Oros, Sota de Copes,
-	 Manilla d'Oros, Quatre d'Espases, Set d'Oros, Sis d'Espases,
-	 Sota d'Espases, Set de Bastos, Quatre de Copes, Cinc d'Espases]
+
+partida1 = [
+	 Carta Manilla Bastos, Carta Sota Bastos, Carta As Bastos, Carta Dos Bastos,
+	 Carta Vuit Bastos, Carta Cavall Bastos, Carta Dos Oros, Carta Tres Bastos,
+	 Carta Rei Espases, Carta Dos Espases, Carta Tres Espases, Carta Manilla Espases,
+	 Carta Vuit Copes, Carta Cavall Copes, Carta Dos Copes, Carta As Copes,
+	 Carta Quatre Bastos, Carta Cinc Oros, Carta Vuit Oros, Carta Sis Bastos,
+	 Carta As Espases, Carta Set Espases, Carta Cavall Espases, Carta Vuit Espases,
+	 Carta Rei Copes, Carta Tres Oros, Carta Set Copes, Carta Manilla Copes,
+	 Carta Quatre Oros, Carta As Oros, Carta Sis Oros, Carta Rei Oros,
+	 Carta Cinc Bastos, Carta Sota Oros, Carta Tres Copes, Carta Rei Bastos,
+	 Carta Cinc Copes, Carta Sis Copes, Carta Cavall Oros, Carta Sota Copes,
+	 Carta Manilla Oros, Carta Quatre Espases, Carta Set Oros, Carta Sis Espases,
+	 Carta Sota Espases, Carta Set Bastos, Carta Quatre Copes, Carta Cinc Espases
+ ]
+
+-- >>> trampa cartes1 (Trumfu Oros) partida1 1
+-- Prelude.!!: index too large
+
+-- >>> basaCorrecta cartes1 (Trumfu Oros) 3 [Carta Rei Copes, Carta Tres Oros, Carta Set Copes, Carta Manilla Copes]
+-- Just 4
