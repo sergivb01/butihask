@@ -105,3 +105,25 @@ tiradesAa =
 
 -- >>> trampa cjAa
 
+guanyadorBases :: Trumfu -> [[Carta]] -> Int -> ([Carta],[Carta])
+guanyadorBases _ [] _ = ([], [])
+guanyadorBases t (bAct:xs) p
+  | jg == 0 || jg == 2 = (cg : fst gb, snd gb)
+  | otherwise = (fst gb, cg : snd gb)
+  where
+    ordreTirada = [seguent x | x <- [p - 1 .. (p + 2)]]
+    cg = fst(quiGuanya bAct t)
+    jg = ordreTirada !! snd(quiGuanya bAct t) - 1
+    next = quiSortira p (jg + 1)
+    gb = guanyadorBases t xs next
+
+    guanyadorBases :: Trumfu -> [[Carta]] -> Int -> ([Carta],[Carta])
+guanyadorBases _ [] _ = ([], [])
+guanyadorBases t (bAct:xs) p
+  | jg == 0 || jg == 2 = (bAct ++ fst gb, snd gb)
+  | otherwise = (fst gb, bAct ++ snd gb)
+  where
+    ordreTirada = [seguent x | x <- [p - 1 .. (p + 2)]]
+    jg = ordreTirada !! snd(quiGuanya bAct t) - 1
+    next = quiSortira p (jg + 1)
+    gb = guanyadorBases t xs next

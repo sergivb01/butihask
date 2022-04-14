@@ -26,8 +26,29 @@ partida1 = [
 	 Carta Sota Espases, Carta Set Bastos, Carta Quatre Copes, Carta Cinc Espases
  ]
 
+
+-- >>> puntsParelles cartes1 (Trumfu Oros) partida1 1
+-- Just (37,35)
+
 -- >>> trampa cartes1 (Trumfu Oros) partida1 1
--- Prelude.!!: index too large
+-- Nothing
+
+-- cartesGuanyades:: Trumfu -> [Carta] -> Int -> ([Carta],[Carta])
+-- >>> cartesGuanyades (Trumfu Oros) partida1 1
+-- ([Manilla de Bastos,Sota de Bastos,As de Bastos,Dos de Bastos,Vuit de Bastos,Cavall de Bastos,Dos d'Oros,Tres de Bastos,Vuit de Copes,Cavall de Copes,Dos de Copes,As de Copes,Quatre de Bastos,Cinc d'Oros,Vuit d'Oros,Sis de Bastos,As d'Espases,Set d'Espases,Cavall d'Espases,Vuit d'Espases,Quatre d'Oros,As d'Oros,Sis d'Oros,Rei d'Oros],[Rei d'Espases,Dos d'Espases,Tres d'Espases,Manilla d'Espases,Rei de Copes,Tres d'Oros,Set de Copes,Manilla de Copes,Cinc de Bastos,Sota d'Oros,Tres de Copes,Rei de Bastos,Cinc de Copes,Sis de Copes,Cavall d'Oros,Sota de Copes,Manilla d'Oros,Quatre d'Espases,Set d'Oros,Sis d'Espases,Sota d'Espases,Set de Bastos,Quatre de Copes,Cinc d'Espases])
+
+-- >>> punts (fst(cartesGuanyades (Trumfu Oros) partida1 1))
+-- >>> length(fst(cartesGuanyades (Trumfu Oros) partida1 1)) `div` 4
+-- 31
+-- 6
+
+-- >>> punts (snd(cartesGuanyades (Trumfu Oros) partida1 1))
+-- >>> length(snd(cartesGuanyades (Trumfu Oros) partida1 1)) `div` 4
+-- 29
+-- 6
+
+-- >>> puntsParella 
+
 
 -- >>> basaCorrecta cartes1 (Trumfu Oros) 3 [Carta Rei Copes, Carta Tres Oros, Carta Set Copes, Carta Manilla Copes]
 -- Just 4

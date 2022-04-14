@@ -13,12 +13,16 @@ data Carta = Carta {tipusCarta :: TipusCarta, pal :: Pal} deriving (Read, Eq, Or
 data Trumfu = Trumfu {palTrumfu :: Pal} | Butifarra deriving (Read, Show, Eq, Ord)
 
 instance Show Carta where
-  show (Carta t p) = "Carta " ++ show t ++ " " ++ show p
+  show (Carta t p)
+    | p == Espases || p == Oros = show t ++ " d'" ++ show p
+    | otherwise = show t ++ " de " ++ show p
 
 deck :: [Carta]
 deck = [Carta val su | su <- [Oros .. Bastos], val <- [Manilla .. Dos]]
 
 ---------------------------------------------------- PRINCIPALS ----------------------------------------------------
+
+-- funcio d'immersió per fer la recursivitat de trampa
 comprovarBases :: [[Carta]] -> Trumfu -> [[Carta]] -> Int -> Int -> Maybe ([Carta],Int, Int)
 comprovarBases _ _ [] _ _ = Nothing
 comprovarBases cj t (bAct:xs) p nBasa =
@@ -43,47 +47,48 @@ trampa cj t tirades p = comprovarBases cj t bases p 1
     bases = [take 4 (drop (x*4) tirades) | x <- [0 .. nombreBases - 1]]
     nombreBases = length tirades `div` 4
 
--- TEST
-cjAa :: [[Carta]]
-cjAa =
-  [ [Carta Cavall Oros, Carta Quatre Bastos],
-    [Carta Vuit Copes, Carta As Oros],
-    [Carta Vuit Oros, Carta Cinc Bastos],
-    [Carta Manilla Bastos, Carta Cavall Bastos]
-  ]
-
-tirades :: [Carta]
-tirades =
-  [
-  Carta Cavall Oros, Carta As Oros, Carta Manilla Oros, Carta Manilla Bastos,
-  Carta Dos Oros, Carta Manilla Espases, Carta Vuit Bastos,Carta Manilla Bastos
-  ]
-
--- /TEST
--- >>> trampa cjAa (Trumfu Bastos) tirades 1
--- Just ([Cavall de Oros,As de Oros,Manilla de Oros,Manilla de Bastos],3,1)
-
+-- funcio d'immersió per fer la recursivitat de cartesGuanyades
+guanyadorBases _ [] _ = ([], [])
+guanyadorBases t (bAct:xs) p
+  | jg == 0 || jg == 2 = (bAct ++ fst gb, snd gb)
+  | otherwise = (fst gb, bAct ++ snd gb)
+  where
+    ordreTirada = [seguent x | x <- [p - 1 .. (p + 2)]]
+    jg = ordreTirada !! snd(quiGuanya bAct t) - 1
+    next = quiSortira p (snd(quiGuanya bAct t) + 1)
+    gb = guanyadorBases t xs next
 
 -- cartesGuanyades: Donat el trumfu de la partida, la llista de cartes tirades per ordre (de la primera a la
 -- última) i el número de jugador que ha tirat la primera carta, ens retorna una tupla amb
 -- les llistes de cartes guanyades per cada parella
--- cartesGuanyades:: Trumfu -> [Carta] -> Int -> ([Carta],[Carta])
+cartesGuanyades:: Trumfu -> [Carta] -> Int -> ([Carta],[Carta])
+cartesGuanyades t ct p = guanyadorBases t bases p
+  where
+    bases = [take 4 (drop (x*4) ct) | x <- [0 .. nombreBases - 1]]
+    nombreBases = length ct `div` 4
 
 -- punts: Donada una llista de cartes, en conta els punts que hi ha
 punts :: [Carta] -> Int
 punts [] = 0
 punts (x : xs)
-  | p >= 5 = 0 + punts xs
-  | otherwise = 5 - p + punts xs
+  | p >= 5 = trace ("Punts per " ++ show x ++ "=0") (punts xs)
+  | otherwise = trace ("Punts per " ++ show x ++ "=" ++ show (5 - p)) ((5 - p) + punts xs)
   where
     p = fromEnum (tipusCarta x)
+
 
 -- puntsParelles: Donades les cartes dels quatre jugadors, donat el trumfu de la partida (el pal que mana),
 -- la llista de cartes tirades per ordre (de la primera a la última) i el número de jugador que
 -- ha tirat la primera carta, ens retorna (si no hi ha hagut trampa) una tupla amb els punts
 -- fets per la primera i per la segona parella
--- puntsParelles:: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe (Int, Int)
--- TODO: si es butifarra, la puntuació es doble
+puntsParelles:: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe (Int, Int)
+puntsParelles cj t tirades p
+  | trampa cj t tirades p == Nothing = Just (p1, p2)
+  | otherwise = Nothing
+  where
+    p1 = punts (fst cg) + length(fst cg) `div` 4
+    p2 = punts (snd cg) + length(snd cg) `div` 4
+    cg = cartesGuanyades t tirades p
 
 ---------------------------------------------------- ADICIONALS ----------------------------------------------------
 
