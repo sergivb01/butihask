@@ -96,3 +96,12 @@ trampososAa = [not (existeixLlista (cartesJugadesAa !! x) ((basesAa !! (x + 1)) 
 -- [[Manilla de Copes,As de Copes,Set de Oros],[Manilla de Espases,Vuit de Bastos],[Cavall de Oros],[Dos de Oros]]
 -- [True,True,True,True]
 
+tiradesAa =
+  [
+  Carta Dos Oros, Carta Quatre Bastos,Carta Manilla Copes, Carta As Copes,
+ Carta Set Oros, Carta Manilla Espases, Carta Vuit Bastos,Carta Manilla Bastos
+  ]
+
+
+-- >>> trampa cjAa
+
