@@ -81,6 +81,7 @@ punts (x : xs)
 -- la llista de cartes tirades per ordre (de la primera a la última) i el número de jugador que
 -- ha tirat la primera carta, ens retorna (si no hi ha hagut trampa) una tupla amb els punts
 -- fets per la primera i per la segona parella
+-- TODO: comprovar si BUTIFARRA
 puntsParelles:: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe (Int, Int)
 puntsParelles cj t tirades p
   | trampa cj t tirades p == Nothing = Just (p1, p2)
