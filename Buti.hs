@@ -15,9 +15,6 @@ instance Show Carta where
     | p == Espases || p == Oros = show t ++ " d'" ++ show p
     | otherwise = show t ++ " de " ++ show p
 
-deck :: [Carta]
-deck = [Carta val su | su <- [Oros .. Bastos], val <- [Manilla .. Dos]]
-
 ---------------------------------------------------- PRINCIPALS ----------------------------------------------------
 
 -- funcio d'immersió per fer la recursivitat de trampa
@@ -31,7 +28,7 @@ comprovarBases cj t (bAct:xs) p nBasa =
     ordreTirada = [seguent x | x <- [p - 1 .. (p + 2)]]
     bc = basaCorrecta cj t p bAct
     next = quiSortira p (snd(quiGuanya bAct t) + 1)
-    cjNext = [borrarElement (cj !! x) (bAct !! (posicioLlista ordreTirada (x + 1))) | x <- [0..3]]
+    cjNext = [borrarElement (cj !! x) (bAct !! posicioLlista ordreTirada (x + 1)) | x <- [0..3]]
 
 -- trampa: Donades les cartes dels quatre jugadors, donat el trumfu (el pal que mana) de la partida,
 -- la llista de cartes tirades per ordre (de la primera a la última) i el número de jugador que
@@ -131,13 +128,6 @@ quiSortira x y
   | x + y - 1 > 4 = x + y - 5
   | otherwise = x + y - 1
 
--- >>> [quiSortira x y | x <- [1..4], y <- [1..4]]
--- [1,2,3,4,2,3,4,1,3,4,1,2,4,1,2,3]
-
--- >>> quiGuanya [Carta As Oros, Carta Dos Bastos, Carta Dos Bastos, Carta Dos Bastos] Butifarra
--- (As de Oros,0)
-
-
 -- - El company esta guanyant:
 --     - Tinc pal sortida => treure una del pal sortida
 --     - No tinc pal sortida => totes
@@ -186,13 +176,6 @@ jugades cartes t tirades
   where
     tirs = length tirades
 
-existeixLlista :: Eq a => [a] -> a -> Bool
-existeixLlista [] _ = False
-existeixLlista (x : xs) y
-  | x == y = True
-  | otherwise = existeixLlista xs y
-
-
 -- retorna el numero del seguent jugador que tirara a la basa
 seguent :: Integral a => a -> a
 seguent x = x `mod` 4 + 1
@@ -202,7 +185,7 @@ seguent x = x `mod` 4 + 1
 -- si hi ha hagut trampa, qui ha fet la trampa
 basaCorrecta :: [[Carta]] -> Trumfu -> Int -> [Carta] -> Maybe Int
 basaCorrecta cj t p basa
- | existeixLlista tramposos True = Just (ordreJugadors !! posicioLlista tramposos True)
+ | elem True tramposos = Just (ordreJugadors !! posicioLlista tramposos True)
  | otherwise = Nothing
   where
     -- les bases en cada canvi començant per llista buida
@@ -219,12 +202,7 @@ basaCorrecta cj t p basa
     -- llista que ens diu si els jugadors han fet trampes, en ordre de tirada
       -- (cartesJugades !! x) => cartes que podia jugar el jugador
       -- ((bases !! (x + 1)) !! x) => ens diu la carta que ha tirat el jugador
-    tramposos = [not (existeixLlista (cartesJugades !! x) ((bases !! (x + 1)) !! x)) | x <- [0..3]]
+    tramposos = [notElem ((bases !! (x + 1)) !! x) (cartesJugades !! x) | x <- [0..3]]
 
--- TODO: reemplaçar per un filter
 borrarElement :: Eq a => [a] -> a -> [a]
 borrarElement xs x = filter (/= x) xs
--- borrarElement [] _ = []
--- borrarElement (x:xs) e
---   | e == x = borrarElement xs e
---   | otherwise = x : borrarElement xs e
