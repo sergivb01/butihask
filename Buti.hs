@@ -1,7 +1,5 @@
 module Buti where
 
-import Debug.Trace (trace)
-
 ------------------------------------------------------- TIPUS -------------------------------------------------------
 
 data TipusCarta = Manilla | As | Rei | Cavall | Sota | Vuit | Set | Sis | Cinc | Quatre | Tres | Dos deriving (Read, Show, Enum, Eq, Ord)
@@ -28,7 +26,7 @@ comprovarBases _ _ [] _ _ = Nothing
 comprovarBases cj t (bAct:xs) p nBasa =
   case bc of
     Just x -> Just (bAct, x, nBasa)
-    Nothing -> trace ("Next = " ++ show next ++ ", cjNext=" ++ show cjNext) (comprovarBases cjNext t xs next (nBasa + 1))
+    Nothing -> comprovarBases cjNext t xs next (nBasa + 1)
   where
     ordreTirada = [seguent x | x <- [p - 1 .. (p + 2)]]
     bc = basaCorrecta cj t p bAct
@@ -71,8 +69,8 @@ cartesGuanyades t ct p = guanyadorBases t bases p
 punts :: [Carta] -> Int
 punts [] = 0
 punts (x : xs)
-  | p >= 5 = trace ("Punts per " ++ show x ++ "=0") (punts xs)
-  | otherwise = trace ("Punts per " ++ show x ++ "=" ++ show (5 - p)) ((5 - p) + punts xs)
+  | p >= 5 = punts xs
+  | otherwise = (5 - p) + punts xs
   where
     p = fromEnum (tipusCarta x)
 
@@ -204,7 +202,7 @@ seguent x = x `mod` 4 + 1
 -- si hi ha hagut trampa, qui ha fet la trampa
 basaCorrecta :: [[Carta]] -> Trumfu -> Int -> [Carta] -> Maybe Int
 basaCorrecta cj t p basa
- | existeixLlista tramposos True = trace ("Basa " ++ show basa ++ " incorrecta. cartesJugades=" ++ show cartesJugades ++ ", ordreJugadors=" ++ show ordreJugadors ++ ", tramposos=" ++ show tramposos ++ " | CJ= " ++ show cj) (Just (ordreJugadors !! posicioLlista tramposos True))
+ | existeixLlista tramposos True = Just (ordreJugadors !! posicioLlista tramposos True)
  | otherwise = Nothing
   where
     -- les bases en cada canvi començant per llista buida
