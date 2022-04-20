@@ -1,7 +1,7 @@
 -- % Podeu afegir les seg�ents constants al vostre codi, Carta degudament transpormades les cartes als vostres tipus.
 -- % �s una partida correcte tenint en compte que comen�a el jugador 1 i que el trumfu �s Oros.
 -- % La puntuaci� per parelles �s 37 i 35.
-import Buti
+import Butihask
 
 cartes1 =[
   [Carta Manilla Bastos, Carta Vuit Bastos, Carta Tres Espases, Carta As Copes, Carta Quatre Bastos, Carta Cavall Espases, Carta Set Copes, Carta As Oros, Carta Cinc Bastos, Carta Sota Copes, Carta Quatre Espases, Carta Set Bastos],

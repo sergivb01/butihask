@@ -1,16 +1,38 @@
-import Buti
-import Debug.Trace (trace)
+import Butihask
 
 ---------------------------------------------------- PRINCIPALS ----------------------------------------------------
 
+cartes1 = [
+  [Carta Manilla Bastos, Carta Vuit Bastos, Carta Tres Espases, Carta As Copes, Carta Quatre Bastos, Carta Cavall Espases, Carta Set Copes, Carta As Oros, Carta Cinc Bastos, Carta Sota Copes, Carta Quatre Espases, Carta Set Bastos],
+  [Carta Sota Bastos, Carta Cavall Bastos, Carta Manilla Espases, Carta Vuit Copes, Carta Cinc Oros, Carta Vuit Espases, Carta Manilla Copes, Carta Sis Oros, Carta Sota Oros, Carta Cinc Copes, Carta Set Oros, Carta Quatre Copes],
+  [Carta As Bastos, Carta Dos Oros, Carta Rei Espases, Carta Cavall Copes, Carta Vuit Oros, Carta As Espases, Carta Rei Copes, Carta Rei Oros, Carta Tres Copes, Carta Sis Copes, Carta Sis Espases, Carta Cinc Espases],
+  [Carta Dos Bastos, Carta Tres Bastos, Carta Dos Espases, Carta Dos Copes, Carta Sis Bastos, Carta Set Espases, Carta Tres Oros, Carta Quatre Oros, Carta Rei Bastos, Carta Cavall Oros, Carta Manilla Oros, Carta Sota Espases]
+ ]
+
+
+partida1 = [
+  Carta Manilla Bastos, Carta Sota Bastos, Carta As Bastos, Carta Dos Bastos,
+  Carta Vuit Bastos, Carta Cavall Bastos, Carta Dos Oros, Carta Tres Bastos,
+  Carta Rei Espases, Carta Dos Espases, Carta Tres Espases, Carta Manilla Espases,
+  Carta Vuit Copes, Carta Cavall Copes, Carta Dos Copes, Carta As Copes,
+  Carta Quatre Bastos, Carta Cinc Oros, Carta Vuit Oros, Carta Sis Bastos,
+  Carta As Espases, Carta Set Espases, Carta Cavall Espases, Carta Vuit Espases,
+  Carta Rei Copes, Carta Tres Oros, Carta Set Copes, Carta Manilla Copes,
+  Carta Quatre Oros, Carta As Oros, Carta Sis Oros, Carta Rei Oros,
+  Carta Cinc Bastos, Carta Sota Oros, Carta Tres Copes, Carta Rei Bastos,
+  Carta Cinc Copes, Carta Sis Copes, Carta Cavall Oros, Carta Sota Copes,
+  Carta Manilla Oros, Carta Quatre Espases, Carta Set Oros, Carta Sis Espases,
+  Carta Sota Espases, Carta Set Bastos, Carta Quatre Copes, Carta Cinc Espases
+ ]
+
 -- >>> punts deck
--- 60
+-- Variable not in scope: deck :: [Carta]
 
 -- >>> punts [Carta Manilla Bastos, Carta As  Bastos,Carta  Rei  Bastos, Carta Cavall Bastos ,Carta  Sota Bastos ,Carta  Vuit Bastos , Carta Set  Bastos, Carta Sis  Bastos, Carta Cinc  Bastos, Carta Quatre  Bastos, Carta Tres Bastos , Carta Dos Bastos]
 -- 15
 
 ---------------------------------------------------- ADICIONALS ----------------------------------------------------
--- >>> palGuanyadorBasa [Carta As Bastos, Carta As Oros,Carta As Bastos] (Trumfu Oros)
+-- >>> trampa cartes1 (Trumfu Oros) 
 -- >>> palGuanyadorBasa [Carta As Bastos, Carta As Oros,Carta As Bastos] Butifarra
 -- Oros
 -- Bastos
@@ -22,7 +44,7 @@ import Debug.Trace (trace)
 --   | otherwise = Oros
 -- --   | otherwise = foldr (\a b -> b) (pal x) xs
 
--- >>> quiGuanya [Carta As Bastos, Carta As Oros,Carta As Bastos] (Trumfu Oros)
+-- >>> quiGuanya [Carta As Bastos, Carta As Oros,Carta As Bastos] (Trumfu Oros
 -- As de Oros
 
 a = [Carta As Bastos, Carta As Oros, Carta As Espases]
@@ -85,16 +107,12 @@ seguentAA x = x `mod` 4 + 1
 basesAa = [take x basaAa | x <- [0..length basaAa]]
 ordreJugadorsAa = [seguentAA x | x <- [p - 1 .. (p + 2)]]
 cartesJugadesAa = [jugades (cjAa !! ((ordreJugadorsAa !! x) - 1)) t (basesAa !! x) | x <- [0..3]]
-trampososAa = [not (existeixLlista (cartesJugadesAa !! x) ((basesAa !! (x + 1)) !! x)) | x <- [0..3]]
 
 -- >>> basesAa
 -- >>> ordreJugadorsAa
 -- >>> cartesJugadesAa
 -- >>> trampososAa
--- [[],[Dos de Oros],[Dos de Oros,Manilla de Copes],[Dos de Oros,Manilla de Copes,Vuit de Bastos],[Dos de Oros,Manilla de Copes,Vuit de Bastos,Cavall de Oros]]
--- [2,3,4,1]
--- [[Manilla de Copes,As de Copes,Set de Oros],[Manilla de Espases,Vuit de Bastos],[Cavall de Oros],[Dos de Oros]]
--- [True,True,True,True]
+-- Variable not in scope: trampososAa
 
 tiradesAa =
   [
@@ -104,26 +122,3 @@ tiradesAa =
 
 
 -- >>> trampa cjAa
-
-guanyadorBases :: Trumfu -> [[Carta]] -> Int -> ([Carta],[Carta])
-guanyadorBases _ [] _ = ([], [])
-guanyadorBases t (bAct:xs) p
-  | jg == 0 || jg == 2 = (cg : fst gb, snd gb)
-  | otherwise = (fst gb, cg : snd gb)
-  where
-    ordreTirada = [seguent x | x <- [p - 1 .. (p + 2)]]
-    cg = fst(quiGuanya bAct t)
-    jg = ordreTirada !! snd(quiGuanya bAct t) - 1
-    next = quiSortira p (jg + 1)
-    gb = guanyadorBases t xs next
-
-    guanyadorBases :: Trumfu -> [[Carta]] -> Int -> ([Carta],[Carta])
-guanyadorBases _ [] _ = ([], [])
-guanyadorBases t (bAct:xs) p
-  | jg == 0 || jg == 2 = (bAct ++ fst gb, snd gb)
-  | otherwise = (fst gb, bAct ++ snd gb)
-  where
-    ordreTirada = [seguent x | x <- [p - 1 .. (p + 2)]]
-    jg = ordreTirada !! snd(quiGuanya bAct t) - 1
-    next = quiSortira p (jg + 1)
-    gb = guanyadorBases t xs next
